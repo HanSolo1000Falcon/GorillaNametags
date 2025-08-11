@@ -56,7 +56,7 @@ public class Plugin : BaseUnityPlugin
         
         TextMeshPro tagText = tagObject.AddComponent<TextMeshPro>();
         tagText.font = comicSans;
-        tagText.fontSize = 2;
+        tagText.fontSize = 1;
         tagText.alignment = TextAlignmentOptions.Center;
         tagText.richText = true;
         return tagText;

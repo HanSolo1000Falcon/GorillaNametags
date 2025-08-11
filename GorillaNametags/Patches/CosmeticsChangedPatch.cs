@@ -10,7 +10,8 @@ public class CosmeticsChangedPatch
     {
         if (__instance.isLocal || __instance.inTryOnRoom)
             return;
-        
-        __instance.GetComponent<StatsTag>().UpdateCosmetx();
+
+        __instance.GetOrAddComponent<StatsTag>(out StatsTag statsTag);
+        statsTag.UpdateCosmetx();
     }
 }

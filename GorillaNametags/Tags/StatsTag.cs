@@ -7,6 +7,7 @@ using PlayFab.ClientModels;
 using TMPro;
 using UnityEngine;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
+using Random = System.Random;
 
 namespace GorillaNametags.Tags;
 
@@ -61,12 +62,23 @@ public class StatsTag : MonoBehaviour
         { "cheese is gouda", "WhoIsThatMonke" },
         { "I like cheese", "awawe" },
     };
-    
+
+    private static readonly string[] colors = new string[]
+    {
+        "red",
+        "#699F3B",
+        "#85B2D5",
+        "#DA3733",
+        "#3C228B",
+        "#D94E01",
+        "#89B58B",
+    };
+
     private TextMeshPro firstPersonStatsTag;
     private TextMeshPro thirdPersonStatsTag;
 
     private Hashtable customProperties;
-    
+
     private string properties;
     private bool hasCosmetx;
     private string platform = "????";
@@ -75,24 +87,26 @@ public class StatsTag : MonoBehaviour
     {
         if (firstPersonStatsTag == null)
             firstPersonStatsTag = Plugin.CreateTag("FirstPersonUserIDTag", Plugin.FirstPersonLayerName,
-                Plugin.nametags[GetComponent<VRRig>()].firstPersonNametag.transform, new Vector3(0f, 0.2f, 0f));
+                Plugin.nametags[GetComponent<VRRig>()].firstPersonNametag.transform, new Vector3(0f, 0.1f, 0f));
 
         if (thirdPersonStatsTag == null)
             thirdPersonStatsTag = Plugin.CreateTag("ThirdPersonUserIDTag", Plugin.ThirdPersonLayerName,
-                Plugin.nametags[GetComponent<VRRig>()].thirdPersonNametag.transform, new Vector3(0f, 0.2f, 0f));
-        
-        UpdateProperties(GetComponent<VRRig>().OwningNetPlayer.GetPlayerRef().CustomProperties);
+                Plugin.nametags[GetComponent<VRRig>()].thirdPersonNametag.transform, new Vector3(0f, 0.1f, 0f));
+
+        UpdateProperties();
     }
 
-    public void UpdateProperties(Hashtable properties)
+    public void UpdateProperties()
     {
-        customProperties = properties;
-        this.properties = "";
-        
-        foreach (string key in properties.Keys)
+        Random random = new Random();
+
+        customProperties = GetComponent<VRRig>().OwningNetPlayer.GetPlayerRef().CustomProperties;
+        properties = "";
+
+        foreach (string key in customProperties.Keys)
         {
             if (mods.TryGetValue(key, out string value))
-                this.properties += $"[{value}]";
+                properties += $"<color={colors[random.Next(0, colors.Length)]}>[{value}]</color>";
         }
     }
 
@@ -119,22 +133,23 @@ public class StatsTag : MonoBehaviour
                 platform = "Quest";
                 return;
             }
-            
+
             platform = "????";
             return;
         }
-        
+
         Plugin.createdDates[GetComponent<VRRig>()] = new DateTime(2023, 02, 07);
-            
-        GetAccountInfoResult actualCreatedDate = await GetAccountCreationDateAsync(GetComponent<VRRig>().OwningNetPlayer.UserId);
+
+        GetAccountInfoResult actualCreatedDate =
+            await GetAccountCreationDateAsync(GetComponent<VRRig>().OwningNetPlayer.UserId);
         Plugin.createdDates[GetComponent<VRRig>()] = actualCreatedDate.AccountInfo.Created;
-            
+
         if (actualCreatedDate.AccountInfo.Created > new DateTime(2023, 02, 08))
         {
             platform = "Quest";
             return;
         }
-            
+
         platform = "????";
     }
 
@@ -152,7 +167,7 @@ public class StatsTag : MonoBehaviour
             }
         }
     }
-    
+
     private async Task<GetAccountInfoResult> GetAccountCreationDateAsync(string userID)
     {
         var tcs = new TaskCompletionSource<GetAccountInfoResult>();
@@ -174,10 +189,26 @@ public class StatsTag : MonoBehaviour
         Destroy(thirdPersonStatsTag);
     }
 
+    private void EnsureTagsCreated()
+    {
+        if (firstPersonStatsTag == null || thirdPersonStatsTag == null)
+            Start();
+    }
+
     private void Update()
     {
-        string cosmetxText = hasCosmetx ? "[CosmetX]" : "";
-        string fullText = $"{properties}{cosmetxText} | [{platform}]";
+        EnsureTagsCreated();
+        if (firstPersonStatsTag == null || thirdPersonStatsTag == null)
+            return;
+        
+        string cosmetxText = hasCosmetx ? "<color=red>[CosmetX]</color>" : "";
+        string fullText = "";
+
+        if (hasCosmetx || properties != "")
+            fullText = $"{properties}{cosmetxText} <color=#9744A6>|</color> <color=#1761B4>[{platform}]</color>";
+        else
+            fullText = $"<color=#1761B4>[{platform}]</color>";
+
         firstPersonStatsTag.text = fullText;
         thirdPersonStatsTag.text = fullText;
     }

@@ -14,7 +14,7 @@ public class PunCallbacks : MonoBehaviourPunCallbacks
             if (rig.OwningNetPlayer.UserId != targetPlayer.UserId || rig.isLocal)
                 continue;
             
-            rig.GetComponent<StatsTag>().UpdateProperties(changedProps);
+            rig.GetComponent<StatsTag>().UpdateProperties();
             break;
         }
     }
