@@ -93,6 +93,9 @@ public class StatsTag : MonoBehaviour
             thirdPersonStatsTag = Plugin.CreateTag("ThirdPersonUserIDTag", Plugin.ThirdPersonLayerName,
                 Plugin.nametags[GetComponent<VRRig>()].thirdPersonNametag.transform, new Vector3(0f, 0.1f, 0f));
 
+        firstPersonStatsTag.transform.localRotation = Quaternion.identity;
+        thirdPersonStatsTag.transform.localRotation = Quaternion.identity;
+        
         UpdateProperties();
     }
 
@@ -112,6 +115,9 @@ public class StatsTag : MonoBehaviour
 
     public async void UpdatePlatform()
     {
+        if (platform == "Steam" || platform == "PC")
+            return;
+        
         string concatStringOfCosmeticsAllowed = GetComponent<VRRig>().concatStringOfCosmeticsAllowed;
 
         if (concatStringOfCosmeticsAllowed.Contains("S. FIRST LOGIN"))
