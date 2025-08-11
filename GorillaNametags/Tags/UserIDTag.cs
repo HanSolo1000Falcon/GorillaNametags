@@ -13,11 +13,11 @@ public class UserIDTag : MonoBehaviour
     {
         if (firstPersonUserIDTag == null)
             firstPersonUserIDTag = Plugin.CreateTag("FirstPersonUserIDTag", Plugin.FirstPersonLayerName,
-                Plugin.nametags[GetComponent<VRRig>()].firstPersonNametag.transform, new Vector3(0f, 0.2f, 0f));
+                Plugin.nametags[GetComponent<VRRig>()].firstPersonNametag.transform, new Vector3(0f, 0.4f, 0f));
 
         if (thirdPersonUserIDTag == null)
             thirdPersonUserIDTag = Plugin.CreateTag("ThirdPersonUserIDTag", Plugin.ThirdPersonLayerName,
-                Plugin.nametags[GetComponent<VRRig>()].thirdPersonNametag.transform, new Vector3(0f, 0.2f, 0f));
+                Plugin.nametags[GetComponent<VRRig>()].thirdPersonNametag.transform, new Vector3(0f, 0.4f, 0f));
         
         firstPersonUserIDTag.text = GetComponent<VRRig>().OwningNetPlayer.UserId;
         thirdPersonUserIDTag.text = GetComponent<VRRig>().OwningNetPlayer.UserId;

@@ -17,5 +17,7 @@ public class SetColorPatch
         
         __instance.GetOrAddComponent<UserIDTag>(out UserIDTag userIDTag);
         userIDTag.UpdateColor(color);
+        
+        __instance.GetOrAddComponent<StatsTag>(out _);
     }
 }

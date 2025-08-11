@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using BepInEx;
+using GorillaNametags.Components;
 using GorillaNametags.Patches;
 using GorillaNametags.Tags;
 using TMPro;
@@ -22,6 +24,8 @@ public class Plugin : BaseUnityPlugin
     
     public static Dictionary<VRRig, Nametag> nametags = new();
     
+    public static Dictionary<VRRig, DateTime> createdDates = new();
+    
     private void Start()
     {
         HarmonyPatches.ApplyHarmonyPatches();
@@ -39,6 +43,8 @@ public class Plugin : BaseUnityPlugin
         
         comicSans = bundle.LoadAsset<TMP_FontAsset>("COMICBD SDF");
         comicSans.material.shader = Shader.Find("TextMeshPro/Distance Field");
+
+        gameObject.AddComponent<PunCallbacks>();
     }
 
     public static TextMeshPro CreateTag(string name, string layerName, Transform parent, Vector3 localPosition)
@@ -52,6 +58,7 @@ public class Plugin : BaseUnityPlugin
         tagText.font = comicSans;
         tagText.fontSize = 2;
         tagText.alignment = TextAlignmentOptions.Center;
+        tagText.richText = true;
         return tagText;
     }
 }

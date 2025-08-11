@@ -9,6 +9,7 @@ public class RigCachedPatch
 {
     private static void Postfix(NetPlayer player, VRRig vrrig)
     {
+        Object.Destroy(vrrig.GetComponent<StatsTag>());
         Object.Destroy(vrrig.GetComponent<UserIDTag>());
         Object.Destroy(vrrig.GetComponent<Nametag>());
     }
