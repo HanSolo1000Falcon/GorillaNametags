@@ -61,6 +61,7 @@ public class StatsTag : MonoBehaviour
         { "CustomMaterial", "Wrysers Custom Cosmetics" },
         { "cheese is gouda", "WhoIsThatMonke" },
         { "I like cheese", "awawe" },
+        { "GorillaNametags", "Gorilla Nametags" },
     };
 
     private static readonly string[] colors = new string[]
@@ -72,6 +73,8 @@ public class StatsTag : MonoBehaviour
         "#3C228B",
         "#D94E01",
         "#89B58B",
+        "green",
+        "yellow",
     };
 
     private TextMeshPro firstPersonStatsTag;
@@ -80,7 +83,6 @@ public class StatsTag : MonoBehaviour
     private Hashtable customProperties;
 
     private string properties;
-    private bool hasCosmetx;
     private string platform = "????";
 
     private void Start()
@@ -159,21 +161,6 @@ public class StatsTag : MonoBehaviour
         platform = "????";
     }
 
-    public void UpdateCosmetx()
-    {
-        CosmeticsController.CosmeticSet cosmeticSet = GetComponent<VRRig>().cosmeticSet;
-
-        foreach (CosmeticsController.CosmeticItem cosmetic in cosmeticSet.items)
-        {
-            if (!cosmetic.isNullItem &&
-                !GetComponent<VRRig>().concatStringOfCosmeticsAllowed.Contains(cosmetic.itemName))
-            {
-                hasCosmetx = true;
-                return;
-            }
-        }
-    }
-
     private async Task<GetAccountInfoResult> GetAccountCreationDateAsync(string userID)
     {
         var tcs = new TaskCompletionSource<GetAccountInfoResult>();
@@ -207,13 +194,7 @@ public class StatsTag : MonoBehaviour
         if (firstPersonStatsTag == null || thirdPersonStatsTag == null)
             return;
 
-        string cosmetxText = hasCosmetx ? "<color=red>[CosmetX]</color>" : "";
-        string fullText = "";
-
-        if (hasCosmetx || properties != "")
-            fullText = $"{properties}{cosmetxText} <color=#9744A6>|</color> <color=#1761B4>[{platform}]</color>";
-        else
-            fullText = $"<color=#1761B4>[{platform}]</color>";
+        string fullText = $"{properties}<color=#1761B4>[{platform}]</color>";
 
         firstPersonStatsTag.text = fullText;
         thirdPersonStatsTag.text = fullText;
