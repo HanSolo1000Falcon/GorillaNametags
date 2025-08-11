@@ -6,19 +6,19 @@ namespace GorillaNametags.Tags;
 
 public class UserIDTag : MonoBehaviour
 {
-    private TextMeshPro firstPersonUserIDTag;
-    private TextMeshPro thirdPersonUserIDTag;
+    public TextMeshPro firstPersonUserIDTag;
+    public TextMeshPro thirdPersonUserIDTag;
 
     private void Start()
     {
         if (firstPersonUserIDTag == null)
-            firstPersonUserIDTag = Plugin.CreateTag("FirstPersonUserIDTag", Plugin.FirstPersonLayerName,
-                Plugin.nametags[GetComponent<VRRig>()].firstPersonNametag.transform, new Vector3(0f, 0.2f, 0f));
+            firstPersonUserIDTag = Plugin.CreateTag("FirstPersonUserIDTag", Plugin.FirstPersonLayerName, transform,
+                new Vector3(0f, 0.7f, 0f));
 
         if (thirdPersonUserIDTag == null)
-            thirdPersonUserIDTag = Plugin.CreateTag("ThirdPersonUserIDTag", Plugin.ThirdPersonLayerName,
-                Plugin.nametags[GetComponent<VRRig>()].thirdPersonNametag.transform, new Vector3(0f, 0.2f, 0f));
-        
+            thirdPersonUserIDTag = Plugin.CreateTag("ThirdPersonUserIDTag", Plugin.ThirdPersonLayerName, transform,
+                new Vector3(0f, 0.7f, 0f));
+
         firstPersonUserIDTag.text = GetComponent<VRRig>().OwningNetPlayer.UserId;
         thirdPersonUserIDTag.text = GetComponent<VRRig>().OwningNetPlayer.UserId;
     }
@@ -27,16 +27,30 @@ public class UserIDTag : MonoBehaviour
     {
         while (firstPersonUserIDTag == null || thirdPersonUserIDTag == null)
             yield return null;
-        
+
         firstPersonUserIDTag.color = color;
         thirdPersonUserIDTag.color = color;
     }
-    
+
     private void OnDestroy()
     {
+        Plugin.userIDTags.Remove(GetComponent<VRRig>());
         Destroy(firstPersonUserIDTag);
         Destroy(thirdPersonUserIDTag);
     }
 
-    public void UpdateColor(Color color) => StartCoroutine(UpdateColorCoroutine(color));
+    private void Update()
+    {
+        firstPersonUserIDTag.transform.LookAt(Plugin.firstPersonCamera);
+        thirdPersonUserIDTag.transform.LookAt(Plugin.thirdPersonCamera);
+
+        firstPersonUserIDTag.transform.Rotate(0f, 180f, 0f);
+        thirdPersonUserIDTag.transform.Rotate(0f, 180f, 0f);
+    }
+    
+    public void UpdateColor(Color color)
+    {
+        StartCoroutine(UpdateColorCoroutine(color));
+        Plugin.userIDTags[GetComponent<VRRig>()] = this;
+    }
 }

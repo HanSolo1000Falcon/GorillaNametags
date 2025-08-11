@@ -12,8 +12,9 @@ public class RigCachedPatch
         if (vrrig.isLocal)
             return;
         
+        Object.Destroy(vrrig.GetComponent<AccountCreationDateTag>());
+        Object.Destroy(vrrig.GetComponent<FPSNametag>());
         Object.Destroy(vrrig.GetComponent<StatsTag>());
         Object.Destroy(vrrig.GetComponent<UserIDTag>());
-        Object.Destroy(vrrig.GetComponent<Nametag>());
     }
 }

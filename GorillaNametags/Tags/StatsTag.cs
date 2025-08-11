@@ -87,15 +87,15 @@ public class StatsTag : MonoBehaviour
     {
         if (firstPersonStatsTag == null)
             firstPersonStatsTag = Plugin.CreateTag("FirstPersonUserIDTag", Plugin.FirstPersonLayerName,
-                Plugin.nametags[GetComponent<VRRig>()].firstPersonNametag.transform, new Vector3(0f, 0.1f, 0f));
+                Plugin.userIDTags[GetComponent<VRRig>()].firstPersonUserIDTag.transform, new Vector3(0f, 0.1f, 0f));
 
         if (thirdPersonStatsTag == null)
             thirdPersonStatsTag = Plugin.CreateTag("ThirdPersonUserIDTag", Plugin.ThirdPersonLayerName,
-                Plugin.nametags[GetComponent<VRRig>()].thirdPersonNametag.transform, new Vector3(0f, 0.1f, 0f));
+                Plugin.userIDTags[GetComponent<VRRig>()].thirdPersonUserIDTag.transform, new Vector3(0f, 0.1f, 0f));
 
         firstPersonStatsTag.transform.localRotation = Quaternion.identity;
         thirdPersonStatsTag.transform.localRotation = Quaternion.identity;
-        
+
         UpdateProperties();
     }
 
@@ -117,7 +117,7 @@ public class StatsTag : MonoBehaviour
     {
         if (platform == "Steam" || platform == "PC")
             return;
-        
+
         string concatStringOfCosmeticsAllowed = GetComponent<VRRig>().concatStringOfCosmeticsAllowed;
 
         if (concatStringOfCosmeticsAllowed.Contains("S. FIRST LOGIN"))
@@ -132,7 +132,7 @@ public class StatsTag : MonoBehaviour
             return;
         }
 
-        if (Plugin.createdDates.TryGetValue(GetComponent<VRRig>(), out DateTime createdDate))
+        if (Plugin.createdDates.TryGetValue(GetComponent<VRRig>().OwningNetPlayer.UserId, out DateTime createdDate))
         {
             if (createdDate > new DateTime(2023, 02, 08))
             {
@@ -144,11 +144,11 @@ public class StatsTag : MonoBehaviour
             return;
         }
 
-        Plugin.createdDates[GetComponent<VRRig>()] = new DateTime(2023, 02, 07);
+        Plugin.createdDates[GetComponent<VRRig>().OwningNetPlayer.UserId] = new DateTime(2023, 02, 07);
 
         GetAccountInfoResult actualCreatedDate =
             await GetAccountCreationDateAsync(GetComponent<VRRig>().OwningNetPlayer.UserId);
-        Plugin.createdDates[GetComponent<VRRig>()] = actualCreatedDate.AccountInfo.Created;
+        Plugin.createdDates[GetComponent<VRRig>().OwningNetPlayer.UserId] = actualCreatedDate.AccountInfo.Created;
 
         if (actualCreatedDate.AccountInfo.Created > new DateTime(2023, 02, 08))
         {
@@ -206,7 +206,7 @@ public class StatsTag : MonoBehaviour
         EnsureTagsCreated();
         if (firstPersonStatsTag == null || thirdPersonStatsTag == null)
             return;
-        
+
         string cosmetxText = hasCosmetx ? "<color=red>[CosmetX]</color>" : "";
         string fullText = "";
 

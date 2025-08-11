@@ -22,9 +22,8 @@ public class Plugin : BaseUnityPlugin
     public const string FirstPersonLayerName = "FirstPersonOnly";
     public const string ThirdPersonLayerName = "MirrorOnly";
     
-    public static Dictionary<VRRig, Nametag> nametags = new();
-    
-    public static Dictionary<VRRig, DateTime> createdDates = new();
+    public static Dictionary<VRRig, UserIDTag> userIDTags = new();
+    public static Dictionary<string, DateTime> createdDates = new();
     
     private void Start()
     {
