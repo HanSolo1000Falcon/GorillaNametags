@@ -39,6 +39,8 @@ public class AccountCreationDateTag : MonoBehaviour
             string text = actualCreatedDate.AccountInfo.Created.ToShortDateString();
             firstPersonAccountCreationDateTag.text = text;
             thirdPersonAccountCreationDateTag.text = text;
+            
+            GetComponent<StatsTag>().UpdatePlatform();
         }
     }
 
