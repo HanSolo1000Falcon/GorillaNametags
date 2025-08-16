@@ -13,56 +13,8 @@ namespace GorillaNametags.Tags;
 
 public class StatsTag : MonoBehaviour
 {
-    private static readonly Dictionary<string, string> mods = new()
-    {
-        { "GFaces", "Gorilla Faces" },
-        { "github.com/maroon-shadow/SimpleBoards", "Simple Boards" },
-        { "ObsidianMC", "Obsidian.lol" },
-        { "github.com/ZlothY29IQ/GorillaMediaDisplay", "Gorilla Media Display" },
-        { "hgrehngio889584739_hugb", "Resurgence" },
-        { "GTrials", "Gorilla Trials" },
-        { "github.com/ZlothY29IQ/TooMuchInfo", "Too Much Info Zlothy" },
-        { "github.com/ZlothY29IQ/RoomUtils-IW", "Room Utils" },
-        { "github.com/ZlothY29IQ/MonkeClick", "Monke Click" },
-        { "github.com/ZlothY29IQ/MonkeClick-CI", "Monke Click CI" },
-        { "github.com/ZlothY29IQ/MonkeRealism", "Monke Realism" },
-        { "MediaPad", "Media Pad" },
-        { "GorillaCinema", "Gorilla Cinema" },
-        { "FPS-Nametags for Zlothy", "FPS Nametags" },
-        { "ChainedTogetherActive", "Chained Together" },
-        { "GPronouns", "Gorilla Pronouns" },
-        { "CSVersion", "Custom Skin" },
-        { "github.com/ZlothY29IQ/Zloth-RecRoomRig", "Zlothy Body Estimation" },
-        { "ShirtProperties", "Gorilla Shirts Old" },
-        { "GorillaShirts", "Gorilla Shirts" },
-        { "GS", "Old Gorilla Shirts" },
-        { "genesis", "ShibaGT Genesis" },
-        { "elux", "Elux" },
-        { "VioletFreeUser", "Violet Free" },
-        { "Hidden Menu", "Hidden Menu" },
-        { "HP_Left", "Holdable Pad" },
-        { "GrateVersion", "Grate" },
-        { "void", "Void Menu" },
-        { "BananaOS", "BananaOS" },
-        { "GC", "Gorilla Craft" },
-        { "CarName", "Vehicles" },
-        { "6XpyykmrCthKhFeUfkYGxv7xnXpoe2", "CCMV2" },
-        { "cronos", "Cronos Menu" },
-        { "ORBIT", "Orbit Menu (Weeb)" },
-        { "Violet On Top", "Violet Menu" }, // I do NOT condone cheating, 'Violet On Top' is simply the custom property.
-        { "MonkePhone", "Monke Phone" },
-        { "Body Tracking", "Body Tracking" },
-        { "Body Estimation", "HanSolo Body Estimation" },
-        { "Gorilla Track", "Gorilla Track" },
-        { "GorillaWatch", "Gorilla Watch" },
-        { "InfoWatch", "Gorilla Info Watch" },
-        { "BananaPhone", "Banana Phone" },
-        { "Vivid", "Vivid Menu" },
-        { "CustomMaterial", "Wrysers Custom Cosmetics" },
-        { "cheese is gouda", "WhoIsThatMonke" },
-        { "I like cheese", "awawe" },
-        { "GorillaNametags", "Gorilla Nametags" },
-    };
+    public static Dictionary<string, string> KnownMods = new();
+    public static Dictionary<string, string> KnownCheats = new();
 
     private static readonly string[] colors = new string[]
     {
@@ -110,8 +62,11 @@ public class StatsTag : MonoBehaviour
 
         foreach (string key in customProperties.Keys)
         {
-            if (mods.TryGetValue(key, out string value))
-                properties += $"<color={colors[random.Next(0, colors.Length)]}>[{value}]</color>";
+            if (KnownMods.TryGetValue(key, out string modName))
+                properties += $"<color={colors[random.Next(0, colors.Length)]}>[{modName} (MOD)]</color>";
+            
+            if (KnownCheats.TryGetValue(key, out string cheatName))
+                properties += $"<color={colors[random.Next(0, colors.Length)]}>[{cheatName} (CHEAT)]</color>";
         }
     }
 
