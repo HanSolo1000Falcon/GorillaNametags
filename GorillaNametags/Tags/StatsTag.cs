@@ -161,7 +161,20 @@ public class StatsTag : MonoBehaviour
         if (firstPersonStatsTag == null || thirdPersonStatsTag == null)
             return;
 
-        string fullText = $"{properties}<color=#1761B4>[{platform}]</color>";
+        bool hasCosmetx = false;
+        
+        CosmeticsController.CosmeticSet cosmeticSet = GetComponent<VRRig>().cosmeticSet;
+        foreach (CosmeticsController.CosmeticItem cosmetic in cosmeticSet.items)
+        {
+            if (!cosmetic.isNullItem && !GetComponent<VRRig>().concatStringOfCosmeticsAllowed.Contains(cosmetic.itemName))
+            {
+                hasCosmetx = true;
+                break;
+            }
+        }
+        
+        string cosmetxText = hasCosmetx ? "<color=red>[CosmetX]</color>" : "";
+        string fullText = $"{properties}{cosmetxText}<color=#1761B4>[{platform}]</color>";
 
         firstPersonStatsTag.text = fullText;
         thirdPersonStatsTag.text = fullText;
