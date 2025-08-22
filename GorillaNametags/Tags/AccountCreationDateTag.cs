@@ -10,8 +10,8 @@ namespace GorillaNametags.Tags;
 
 public class AccountCreationDateTag : MonoBehaviour
 {
-    private TextMeshPro firstPersonAccountCreationDateTag;
-    private TextMeshPro thirdPersonAccountCreationDateTag;
+    public TextMeshPro firstPersonAccountCreationDateTag;
+    public TextMeshPro thirdPersonAccountCreationDateTag;
     
     private IEnumerator UpdateColorCoroutine(Color color)
     {
@@ -32,7 +32,7 @@ public class AccountCreationDateTag : MonoBehaviour
         }
         else
         {
-            Plugin.createdDates[GetComponent<VRRig>().OwningNetPlayer.UserId] = new DateTime(2023, 02, 07);
+            Plugin.createdDates[GetComponent<VRRig>().OwningNetPlayer.UserId] = new DateTime(2023, 02, 05);
             GetAccountInfoResult actualCreatedDate = await GetAccountCreationDateAsync(GetComponent<VRRig>().OwningNetPlayer.UserId);
             Plugin.createdDates[GetComponent<VRRig>().OwningNetPlayer.UserId] = actualCreatedDate.AccountInfo.Created;
             

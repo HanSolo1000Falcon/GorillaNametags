@@ -63,18 +63,18 @@ public class StatsTag : MonoBehaviour
         foreach (string key in customProperties.Keys)
         {
             if (KnownMods.TryGetValue(key, out string modName))
-                properties += $"<color={colors[random.Next(0, colors.Length)]}>[{modName} (MOD)]</color>";
+                properties += $"<color={colors[random.Next(0, colors.Length)]}>[{modName}]</color>";
             
             if (KnownCheats.TryGetValue(key, out string cheatName))
-                properties += $"<color={colors[random.Next(0, colors.Length)]}>[{cheatName} (CHEAT)]</color>";
+                properties += $"<color={colors[random.Next(0, colors.Length)]}>[{cheatName}]</color>";
         }
     }
 
     public async void UpdatePlatform()
     {
-        if (platform == "Steam" || platform == "PC")
+        if (platform == "Steam")
             return;
-
+        
         string concatStringOfCosmeticsAllowed = GetComponent<VRRig>().concatStringOfCosmeticsAllowed;
 
         if (concatStringOfCosmeticsAllowed.Contains("S. FIRST LOGIN"))
@@ -83,15 +83,21 @@ public class StatsTag : MonoBehaviour
             return;
         }
 
+        if (platform == "PC")
+            return;
+        
         if (concatStringOfCosmeticsAllowed.Contains("FIRST LOGIN") || customProperties.Count > 1)
         {
             platform = "PC";
             return;
         }
+        
+        if (platform == "Steam" || platform == "PC" || platform == "Quest")
+            return;
 
         if (Plugin.createdDates.TryGetValue(GetComponent<VRRig>().OwningNetPlayer.UserId, out DateTime createdDate))
         {
-            if (createdDate > new DateTime(2023, 02, 08))
+            if (createdDate > new DateTime(2023, 02, 06))
             {
                 platform = "Quest";
                 return;
@@ -101,13 +107,19 @@ public class StatsTag : MonoBehaviour
             return;
         }
 
-        Plugin.createdDates[GetComponent<VRRig>().OwningNetPlayer.UserId] = new DateTime(2023, 02, 07);
+        Plugin.createdDates[GetComponent<VRRig>().OwningNetPlayer.UserId] = new DateTime(2023, 02, 05);
 
         GetAccountInfoResult actualCreatedDate =
             await GetAccountCreationDateAsync(GetComponent<VRRig>().OwningNetPlayer.UserId);
         Plugin.createdDates[GetComponent<VRRig>().OwningNetPlayer.UserId] = actualCreatedDate.AccountInfo.Created;
 
-        if (actualCreatedDate.AccountInfo.Created > new DateTime(2023, 02, 08))
+        if (TryGetComponent<AccountCreationDateTag>(out AccountCreationDateTag accountCreationDateTag))
+        {
+            accountCreationDateTag.firstPersonAccountCreationDateTag.text = actualCreatedDate.AccountInfo.Created.ToShortDateString();
+            accountCreationDateTag.thirdPersonAccountCreationDateTag.text = actualCreatedDate.AccountInfo.Created.ToShortDateString();
+        }
+        
+        if (actualCreatedDate.AccountInfo.Created > new DateTime(2023, 02, 06))
         {
             platform = "Quest";
             return;
