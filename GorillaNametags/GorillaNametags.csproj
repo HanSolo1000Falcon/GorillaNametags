@@ -34,7 +34,7 @@
             <HintPath>$(GameAssemblyPath)\Mono.Security.dll</HintPath>
         </Reference>
         <Reference Include="Newtonsoft.Json">
-          <HintPath>$(GameAssemblyPath)\Newtonsoft.Json.dll</HintPath>
+            <HintPath>$(GameAssemblyPath)\Newtonsoft.Json.dll</HintPath>
         </Reference>
         <Reference Include="Oculus.Platform">
             <HintPath>$(GameAssemblyPath)\Oculus.Platform.dll</HintPath>
@@ -291,16 +291,14 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="GorillaNametagsFont\RULES.txt" />
-      <EmbeddedResource Include="GorillaNametagsFont\RULES.txt" />
-      <None Remove="GorillaNametagsFont\GorillaNametagsFont.ttf" />
-      <EmbeddedResource Include="GorillaNametagsFont\GorillaNametagsFont.ttf" />
+        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.5.0-beta.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.5.0-beta.1">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
+        <None Remove="GorillaNametagsFont\comicbd.ttf"/>
+        <EmbeddedResource Include="GorillaNametagsFont\comicbd.ttf"/>
     </ItemGroup>
 </Project>

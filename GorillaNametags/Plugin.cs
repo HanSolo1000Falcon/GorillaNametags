@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using BepInEx;
@@ -51,24 +52,18 @@ public class Plugin : BaseUnityPlugin
         {
             Directory.CreateDirectory(directoryPath);
 
-            using (Stream txtStream = Assembly.GetExecutingAssembly()
-                       .GetManifestResourceStream("GorillaNametags.GorillaNametagsFont.RULES.txt"))
-            {
-                using (FileStream fileStream = new FileStream(Path.Combine(directoryPath, "RULES.txt"), FileMode.Create, FileAccess.Write))
-                    txtStream.CopyTo(fileStream);
-            }
-
             using (Stream fontStream = Assembly.GetExecutingAssembly()
-                       .GetManifestResourceStream("GorillaNametags.GorillaNametagsFont.GorillaNametagsFont.ttf"))
+                       .GetManifestResourceStream("GorillaNametags.GorillaNametagsFont.comicbd.ttf"))
             {
-                using (FileStream fileStream = new FileStream(Path.Combine(directoryPath, "GorillaNametagsFont.ttf"), FileMode.Create, FileAccess.Write))
+                using (FileStream fileStream = new FileStream(Path.Combine(directoryPath, "comicbd.ttf"), FileMode.Create, FileAccess.Write))
                     fontStream.CopyTo(fileStream);
             }
         }
 
         try
         {
-            chosenFont = TMP_FontAsset.CreateFontAsset(new Font(Path.Combine(directoryPath, "GorillaNametagsFont.ttf")));
+            string firstFont = Directory.EnumerateFiles(directoryPath, "*.*", SearchOption.TopDirectoryOnly).FirstOrDefault(f => f.EndsWith(".ttf", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".otf", StringComparison.OrdinalIgnoreCase));
+            chosenFont = TMP_FontAsset.CreateFontAsset(new Font(firstFont));
             chosenFont.material.shader = Shader.Find("TextMeshPro/Distance Field");
         }
         catch (Exception ex)
