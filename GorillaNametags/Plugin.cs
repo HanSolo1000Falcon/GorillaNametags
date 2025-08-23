@@ -44,14 +44,38 @@ public class Plugin : BaseUnityPlugin
     {
         FirstPersonCamera = GorillaTagger.Instance.mainCamera.transform;
         ThirdPersonCamera = GorillaTagger.Instance.thirdPersonCamera.transform.GetChild(0);
+        
+        string directoryPath = Path.Combine(Paths.BepInExRootPath, "GorillaNametagsFont");
 
-        Stream bundleStream = Assembly.GetExecutingAssembly()
-            .GetManifestResourceStream("GorillaNametags.Resources.gorillanametags");
-        AssetBundle bundle = AssetBundle.LoadFromStream(bundleStream);
-        bundleStream.Close();
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
 
-        chosenFont = bundle.LoadAsset<TMP_FontAsset>("COMICBD SDF");
-        chosenFont.material.shader = Shader.Find("TextMeshPro/Distance Field");
+            using (Stream txtStream = Assembly.GetExecutingAssembly()
+                       .GetManifestResourceStream("GorillaNametags.GorillaNametagsFont.RULES.txt"))
+            {
+                using (FileStream fileStream = new FileStream(Path.Combine(directoryPath, "RULES.txt"), FileMode.Create, FileAccess.Write))
+                    txtStream.CopyTo(fileStream);
+            }
+
+            using (Stream fontStream = Assembly.GetExecutingAssembly()
+                       .GetManifestResourceStream("GorillaNametags.GorillaNametagsFont.GorillaNametagsFont.ttf"))
+            {
+                using (FileStream fileStream = new FileStream(Path.Combine(directoryPath, "GorillaNametagsFont.ttf"), FileMode.Create, FileAccess.Write))
+                    fontStream.CopyTo(fileStream);
+            }
+        }
+
+        try
+        {
+            chosenFont = TMP_FontAsset.CreateFontAsset(new Font(Path.Combine(directoryPath, "GorillaNametagsFont.ttf")));
+            chosenFont.material.shader = Shader.Find("TextMeshPro/Distance Field");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Error loading font: {ex.Message}");
+            Application.Quit();
+        }
 
         gameObject.AddComponent<PunCallbacks>();
 

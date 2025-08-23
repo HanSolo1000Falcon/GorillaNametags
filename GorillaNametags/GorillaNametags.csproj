@@ -291,7 +291,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="Resources\gorillanametags" />
+      <None Remove="GorillaNametagsFont\RULES.txt" />
+      <EmbeddedResource Include="GorillaNametagsFont\RULES.txt" />
+      <None Remove="GorillaNametagsFont\GorillaNametagsFont.ttf" />
+      <EmbeddedResource Include="GorillaNametagsFont\GorillaNametagsFont.ttf" />
     </ItemGroup>
 
     <ItemGroup>
