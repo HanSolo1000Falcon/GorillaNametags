@@ -33,8 +33,8 @@ public class UserIDTag : TagBase
 
     private void OnDestroy()
     {
-        Destroy(firstPersonTag);
-        Destroy(thirdPersonTag);
+        Destroy(firstPersonTag.gameObject);
+        Destroy(thirdPersonTag.gameObject);
         
         Destroy(statsTag);
         Destroy(fpsNametag);
