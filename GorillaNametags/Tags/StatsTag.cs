@@ -4,14 +4,13 @@ using System.Threading.Tasks;
 using GorillaNetworking;
 using PlayFab;
 using PlayFab.ClientModels;
-using TMPro;
 using UnityEngine;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Random = System.Random;
 
 namespace GorillaNametags.Tags;
 
-public class StatsTag : MonoBehaviour
+public class StatsTag : TagBase
 {
     public static Dictionary<string, string> KnownMods = new();
     public static Dictionary<string, string> KnownCheats = new();
@@ -28,36 +27,55 @@ public class StatsTag : MonoBehaviour
         "green",
         "yellow",
     };
-
-    private TextMeshPro firstPersonStatsTag;
-    private TextMeshPro thirdPersonStatsTag;
+    
+    private VRRig rig;
 
     private Hashtable customProperties;
 
     private string properties;
     private string platform = "????";
-
-    private void Start()
+    private string lastStats = "";
+    
+    protected override void Start()
     {
-        if (firstPersonStatsTag == null)
-            firstPersonStatsTag = Plugin.CreateTag("FirstPersonUserIDTag", Plugin.FirstPersonLayerName,
-                Plugin.userIDTags[GetComponent<VRRig>()].firstPersonUserIDTag.transform, new Vector3(0f, 0.1f, 0f));
-
-        if (thirdPersonStatsTag == null)
-            thirdPersonStatsTag = Plugin.CreateTag("ThirdPersonUserIDTag", Plugin.ThirdPersonLayerName,
-                Plugin.userIDTags[GetComponent<VRRig>()].thirdPersonUserIDTag.transform, new Vector3(0f, 0.1f, 0f));
-
-        firstPersonStatsTag.transform.localRotation = Quaternion.identity;
-        thirdPersonStatsTag.transform.localRotation = Quaternion.identity;
-
+        localPosition = new Vector3(0f, 0.1f, 0f);
+        base.Start();
+        
+        rig = GetComponent<VRRig>();
+        
+        UpdatePlatform();
         UpdateProperties();
     }
+    
+    private void Update()
+    {
+        bool hasCosmetx = false;
+        
+        CosmeticsController.CosmeticSet cosmeticSet = rig.cosmeticSet;
+        foreach (CosmeticsController.CosmeticItem cosmetic in cosmeticSet.items)
+        {
+            if (!cosmetic.isNullItem && !rig.concatStringOfCosmeticsAllowed.Contains(cosmetic.itemName))
+            {
+                hasCosmetx = true;
+                break;
+            }
+        }
+        
+        string cosmetxText = hasCosmetx ? "<color=red>[CosmetX]</color>" : "";
+        string fullText = $"{properties}{cosmetxText}<color=#1761B4>[{platform}]</color>";
 
+        if (fullText != lastStats)
+        {
+            StartCoroutine(SetText(fullText));
+            lastStats = fullText;
+        }
+    }
+    
     public void UpdateProperties()
     {
         Random random = new Random();
 
-        customProperties = GetComponent<VRRig>().OwningNetPlayer.GetPlayerRef().CustomProperties;
+        customProperties = rig.OwningNetPlayer.GetPlayerRef().CustomProperties;
         properties = "";
 
         foreach (string key in customProperties.Keys)
@@ -69,7 +87,7 @@ public class StatsTag : MonoBehaviour
                 properties += $"<color={colors[random.Next(0, colors.Length)]}>[{cheatName}]</color>";
         }
     }
-
+    
     public async void UpdatePlatform()
     {
         if (platform == "Steam")
@@ -115,8 +133,8 @@ public class StatsTag : MonoBehaviour
 
         if (TryGetComponent<AccountCreationDateTag>(out AccountCreationDateTag accountCreationDateTag))
         {
-            accountCreationDateTag.firstPersonAccountCreationDateTag.text = actualCreatedDate.AccountInfo.Created.ToShortDateString();
-            accountCreationDateTag.thirdPersonAccountCreationDateTag.text = actualCreatedDate.AccountInfo.Created.ToShortDateString();
+            accountCreationDateTag.firstPersonTag.text = actualCreatedDate.AccountInfo.Created.ToShortDateString();
+            accountCreationDateTag.thirdPersonTag.text = actualCreatedDate.AccountInfo.Created.ToShortDateString();
         }
         
         if (actualCreatedDate.AccountInfo.Created > new DateTime(2023, 02, 06))
@@ -127,7 +145,7 @@ public class StatsTag : MonoBehaviour
 
         platform = "????";
     }
-
+    
     private async Task<GetAccountInfoResult> GetAccountCreationDateAsync(string userID)
     {
         var tcs = new TaskCompletionSource<GetAccountInfoResult>();
@@ -141,42 +159,5 @@ public class StatsTag : MonoBehaviour
             });
 
         return await tcs.Task;
-    }
-
-    private void OnDestroy()
-    {
-        Destroy(firstPersonStatsTag);
-        Destroy(thirdPersonStatsTag);
-    }
-
-    private void EnsureTagsCreated()
-    {
-        if (firstPersonStatsTag == null || thirdPersonStatsTag == null)
-            Start();
-    }
-
-    private void Update()
-    {
-        EnsureTagsCreated();
-        if (firstPersonStatsTag == null || thirdPersonStatsTag == null)
-            return;
-
-        bool hasCosmetx = false;
-        
-        CosmeticsController.CosmeticSet cosmeticSet = GetComponent<VRRig>().cosmeticSet;
-        foreach (CosmeticsController.CosmeticItem cosmetic in cosmeticSet.items)
-        {
-            if (!cosmetic.isNullItem && !GetComponent<VRRig>().concatStringOfCosmeticsAllowed.Contains(cosmetic.itemName))
-            {
-                hasCosmetx = true;
-                break;
-            }
-        }
-        
-        string cosmetxText = hasCosmetx ? "<color=red>[CosmetX]</color>" : "";
-        string fullText = $"{properties}{cosmetxText}<color=#1761B4>[{platform}]</color>";
-
-        firstPersonStatsTag.text = fullText;
-        thirdPersonStatsTag.text = fullText;
     }
 }

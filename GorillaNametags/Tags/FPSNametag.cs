@@ -4,11 +4,8 @@ using UnityEngine;
 
 namespace GorillaNametags.Tags;
 
-public class FPSNametag : MonoBehaviour
+public class FPSNametag : TagBase
 {
-    private TextMeshPro firstPersonNametag;
-    private TextMeshPro thirdPersonNametag;
-
     private VRRig rig;
     private NetPlayer netPlayer;
 
@@ -23,48 +20,33 @@ public class FPSNametag : MonoBehaviour
             case < 60:
                 tagColour = "red";
                 break;
-            case < 90:
+            
+            case < 72:
                 tagColour = "yellow";
-                break;
-            default:
-                tagColour = "green";
                 break;
         }
 
         string text = $"{netPlayer.NickName} | <color={tagColour}>{fps} FPS</color>";
         
-        firstPersonNametag.text = text;
-        thirdPersonNametag.text = text;
+        firstPersonTag.text = text;
+        thirdPersonTag.text = text;
     }
 
-    private void OnDestroy()
+    protected override void Start()
     {
-        Destroy(firstPersonNametag);
-        Destroy(thirdPersonNametag);
-    }
-
-    private void Start()
-    {
+        localPosition = new Vector3(0f, 0.2f, 0f);
+        base.Start();
+        
         rig = GetComponent<VRRig>();
         netPlayer = rig.OwningNetPlayer;
-        
-        if (firstPersonNametag == null)
-            firstPersonNametag = Plugin.CreateTag("FirstPersonNametag", Plugin.FirstPersonLayerName,
-                Plugin.userIDTags[GetComponent<VRRig>()].firstPersonUserIDTag.transform, new Vector3(0f, 0.2f, 0f));
-
-        if (thirdPersonNametag == null)
-            thirdPersonNametag = Plugin.CreateTag("ThirdPersonNametag", Plugin.ThirdPersonLayerName,
-                Plugin.userIDTags[GetComponent<VRRig>()].thirdPersonUserIDTag.transform, new Vector3(0f, 0.2f, 0f));
     }
-    
-    private IEnumerator UpdateColorCoroutine(Color color)
+
+    public void UpdateColour(Color colour)
     {
-        while (firstPersonNametag == null || thirdPersonNametag == null)
-            yield return null;
-
-        firstPersonNametag.color = color;
-        thirdPersonNametag.color = color;
+        if (firstPersonTag == null || thirdPersonTag == null)
+            return;
+        
+        firstPersonTag.color = colour;
+        thirdPersonTag.color = colour;
     }
-
-    public void UpdateColor(Color color) => StartCoroutine(UpdateColorCoroutine(color));
 }

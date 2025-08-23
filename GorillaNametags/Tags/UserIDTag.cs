@@ -1,56 +1,91 @@
-using System.Collections;
-using TMPro;
 using UnityEngine;
 
 namespace GorillaNametags.Tags;
 
-public class UserIDTag : MonoBehaviour
+public class UserIDTag : TagBase
 {
-    public TextMeshPro firstPersonUserIDTag;
-    public TextMeshPro thirdPersonUserIDTag;
+    private VRRig rig;
 
-    private void Start()
+    private StatsTag statsTag;
+    private FPSNametag fpsNametag;
+    private AccountCreationDateTag accountCreationDateTag;
+
+    protected override void Start()
     {
-        if (firstPersonUserIDTag == null)
-            firstPersonUserIDTag = Plugin.CreateTag("FirstPersonUserIDTag", Plugin.FirstPersonLayerName, transform,
-                new Vector3(0f, 0.7f, 0f));
+        AssignTagParents(transform, transform);
+        localPosition = new Vector3(0f, 0.7f, 0f);
+        base.Start();
+        
+        rig = GetComponent<VRRig>();
 
-        if (thirdPersonUserIDTag == null)
-            thirdPersonUserIDTag = Plugin.CreateTag("ThirdPersonUserIDTag", Plugin.ThirdPersonLayerName, transform,
-                new Vector3(0f, 0.7f, 0f));
+        statsTag = gameObject.AddComponent<StatsTag>();
+        fpsNametag = gameObject.AddComponent<FPSNametag>();
+        accountCreationDateTag = gameObject.AddComponent<AccountCreationDateTag>();
+        
+        statsTag.AssignTagParents(firstPersonTag.transform, thirdPersonTag.transform);
+        fpsNametag.AssignTagParents(firstPersonTag.transform, thirdPersonTag.transform);
+        accountCreationDateTag.AssignTagParents(firstPersonTag.transform, thirdPersonTag.transform);
 
-        firstPersonUserIDTag.text = GetComponent<VRRig>().OwningNetPlayer.UserId;
-        thirdPersonUserIDTag.text = GetComponent<VRRig>().OwningNetPlayer.UserId;
-    }
-
-    private IEnumerator UpdateColorCoroutine(Color color)
-    {
-        while (firstPersonUserIDTag == null || thirdPersonUserIDTag == null)
-            yield return null;
-
-        firstPersonUserIDTag.color = color;
-        thirdPersonUserIDTag.color = color;
+        StartCoroutine(SetText(rig.OwningNetPlayer.UserId));
     }
 
     private void OnDestroy()
     {
-        Plugin.userIDTags.Remove(GetComponent<VRRig>());
-        Destroy(firstPersonUserIDTag);
-        Destroy(thirdPersonUserIDTag);
+        Destroy(firstPersonTag);
+        Destroy(thirdPersonTag);
+        
+        Destroy(statsTag);
+        Destroy(fpsNametag);
     }
 
     private void Update()
     {
-        firstPersonUserIDTag.transform.LookAt(Plugin.firstPersonCamera);
-        thirdPersonUserIDTag.transform.LookAt(Plugin.thirdPersonCamera);
+        Color targetColour = GetTargetColour();
+        Color lerpedColour = Color.Lerp(firstPersonTag.color, targetColour, Time.deltaTime * 3f);
+        UpdateColour(lerpedColour);
 
-        firstPersonUserIDTag.transform.Rotate(0f, 180f, 0f);
-        thirdPersonUserIDTag.transform.Rotate(0f, 180f, 0f);
+        firstPersonTag.transform.LookAt(Plugin.FirstPersonCamera);
+        thirdPersonTag.transform.LookAt(Plugin.ThirdPersonCamera);
+
+        firstPersonTag.transform.Rotate(0f, 180f, 0f);
+        thirdPersonTag.transform.Rotate(0f, 180f, 0f);
     }
     
-    public void UpdateColor(Color color)
+    private Color GetTargetColour()
     {
-        StartCoroutine(UpdateColorCoroutine(color));
-        Plugin.userIDTags[GetComponent<VRRig>()] = this;
+        if (rig.bodyRenderer.cosmeticBodyType == GorillaBodyType.Skeleton)
+            return Color.green;
+
+        switch (rig.setMatIndex)
+        {
+            case 1:
+                return Color.red;
+
+            case 2:
+            case 11:
+                return new Color(1f, 0.3288f, 0f, 1f);
+
+            case 3:
+            case 7:
+                return Color.blue;
+
+            case 12:
+                return Color.green;
+
+            default:
+                return rig.playerColor;
+        }
+    }
+
+    public void UpdateColour(Color colour)
+    {
+        if (firstPersonTag == null || thirdPersonTag == null)
+            return;
+        
+        firstPersonTag.color = colour;
+        thirdPersonTag.color = colour;
+        
+        fpsNametag.UpdateColour(colour);
+        accountCreationDateTag.UpdateColour(colour);
     }
 }

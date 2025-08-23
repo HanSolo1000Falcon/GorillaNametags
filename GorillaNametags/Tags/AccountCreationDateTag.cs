@@ -1,25 +1,19 @@
 using System;
-using System.Collections;
 using System.Threading.Tasks;
 using PlayFab;
 using PlayFab.ClientModels;
-using TMPro;
 using UnityEngine;
 
 namespace GorillaNametags.Tags;
 
-public class AccountCreationDateTag : MonoBehaviour
+public class AccountCreationDateTag : TagBase
 {
-    public TextMeshPro firstPersonAccountCreationDateTag;
-    public TextMeshPro thirdPersonAccountCreationDateTag;
-    
-    private IEnumerator UpdateColorCoroutine(Color color)
+    protected override void Start()
     {
-        while (firstPersonAccountCreationDateTag == null || thirdPersonAccountCreationDateTag == null)
-            yield return null;
-
-        firstPersonAccountCreationDateTag.color = color;
-        thirdPersonAccountCreationDateTag.color = color;
+        localPosition = new Vector3(0f, 0.3f, 0f);
+        base.Start();
+        
+        GetAccountCreationDate();
     }
     
     private async void GetAccountCreationDate()
@@ -27,8 +21,7 @@ public class AccountCreationDateTag : MonoBehaviour
         if (Plugin.createdDates.TryGetValue(GetComponent<VRRig>().OwningNetPlayer.UserId, out DateTime createdDate))
         {
             string text = createdDate.ToShortDateString();
-            firstPersonAccountCreationDateTag.text = text;
-            thirdPersonAccountCreationDateTag.text = text;
+            StartCoroutine(SetText(text));
         }
         else
         {
@@ -37,8 +30,7 @@ public class AccountCreationDateTag : MonoBehaviour
             Plugin.createdDates[GetComponent<VRRig>().OwningNetPlayer.UserId] = actualCreatedDate.AccountInfo.Created;
             
             string text = actualCreatedDate.AccountInfo.Created.ToShortDateString();
-            firstPersonAccountCreationDateTag.text = text;
-            thirdPersonAccountCreationDateTag.text = text;
+            StartCoroutine(SetText(text));
             
             GetComponent<StatsTag>().UpdatePlatform();
         }
@@ -59,24 +51,12 @@ public class AccountCreationDateTag : MonoBehaviour
         return await tcs.Task;
     }
     
-    private void OnDestroy()
+    public void UpdateColour(Color colour)
     {
-        Destroy(firstPersonAccountCreationDateTag);
-        Destroy(thirdPersonAccountCreationDateTag);
-    }
-
-    private void Start()
-    {
-        if (firstPersonAccountCreationDateTag == null)
-            firstPersonAccountCreationDateTag = Plugin.CreateTag("FirstPersonAccountCreationDateTag", Plugin.FirstPersonLayerName,
-                Plugin.userIDTags[GetComponent<VRRig>()].firstPersonUserIDTag.transform, new Vector3(0f, 0.3f, 0f));
-
-        if (thirdPersonAccountCreationDateTag == null)
-            thirdPersonAccountCreationDateTag = Plugin.CreateTag("ThirdPersonAccountCreationDateTag", Plugin.ThirdPersonLayerName,
-                Plugin.userIDTags[GetComponent<VRRig>()].thirdPersonUserIDTag.transform, new Vector3(0f, 0.3f, 0f));
+        if (firstPersonTag == null || thirdPersonTag == null)
+            return;
         
-        GetAccountCreationDate();
+        firstPersonTag.color = colour;
+        thirdPersonTag.color = colour;
     }
-    
-    public void UpdateColor(Color color) => StartCoroutine(UpdateColorCoroutine(color));
 }
