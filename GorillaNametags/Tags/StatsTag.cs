@@ -66,7 +66,8 @@ public class StatsTag : TagBase
 
         if (fullText != lastStats)
         {
-            StartCoroutine(SetText(fullText));
+            firstPersonTag.text = fullText;
+            thirdPersonTag.text = fullText;
             lastStats = fullText;
         }
     }

@@ -26,7 +26,9 @@ public class UserIDTag : TagBase
         fpsNametag.AssignTagParents(firstPersonTag.transform, thirdPersonTag.transform);
         accountCreationDateTag.AssignTagParents(firstPersonTag.transform, thirdPersonTag.transform);
 
-        StartCoroutine(SetText(rig.OwningNetPlayer.UserId));
+        string userId = rig.OwningNetPlayer.UserId;
+        firstPersonTag.text = userId;
+        thirdPersonTag.text = userId;
     }
 
     private void OnDestroy()

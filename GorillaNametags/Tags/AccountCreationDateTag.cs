@@ -21,7 +21,8 @@ public class AccountCreationDateTag : TagBase
         if (Plugin.createdDates.TryGetValue(GetComponent<VRRig>().OwningNetPlayer.UserId, out DateTime createdDate))
         {
             string text = createdDate.ToShortDateString();
-            StartCoroutine(SetText(text));
+            firstPersonTag.text = text;
+            thirdPersonTag.text = text;
         }
         else
         {
@@ -30,7 +31,8 @@ public class AccountCreationDateTag : TagBase
             Plugin.createdDates[GetComponent<VRRig>().OwningNetPlayer.UserId] = actualCreatedDate.AccountInfo.Created;
             
             string text = actualCreatedDate.AccountInfo.Created.ToShortDateString();
-            StartCoroutine(SetText(text));
+            firstPersonTag.text = text;
+            thirdPersonTag.text = text;
             
             GetComponent<StatsTag>().UpdatePlatform();
         }
