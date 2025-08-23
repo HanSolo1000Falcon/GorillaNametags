@@ -18,7 +18,7 @@ public class AccountCreationDateTag : TagBase
     
     private async void GetAccountCreationDate()
     {
-        if (Plugin.createdDates.TryGetValue(GetComponent<VRRig>().OwningNetPlayer.UserId, out DateTime createdDate))
+        if (Plugin.CreatedDates.TryGetValue(GetComponent<VRRig>().OwningNetPlayer.UserId, out DateTime createdDate))
         {
             string text = createdDate.ToShortDateString();
             firstPersonTag.text = text;
@@ -26,9 +26,9 @@ public class AccountCreationDateTag : TagBase
         }
         else
         {
-            Plugin.createdDates[GetComponent<VRRig>().OwningNetPlayer.UserId] = new DateTime(2023, 02, 05);
+            Plugin.CreatedDates[GetComponent<VRRig>().OwningNetPlayer.UserId] = new DateTime(2023, 02, 05);
             GetAccountInfoResult actualCreatedDate = await GetAccountCreationDateAsync(GetComponent<VRRig>().OwningNetPlayer.UserId);
-            Plugin.createdDates[GetComponent<VRRig>().OwningNetPlayer.UserId] = actualCreatedDate.AccountInfo.Created;
+            Plugin.CreatedDates[GetComponent<VRRig>().OwningNetPlayer.UserId] = actualCreatedDate.AccountInfo.Created;
             
             string text = actualCreatedDate.AccountInfo.Created.ToShortDateString();
             firstPersonTag.text = text;

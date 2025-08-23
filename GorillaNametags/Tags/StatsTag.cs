@@ -114,7 +114,7 @@ public class StatsTag : TagBase
         if (platform == "Steam" || platform == "PC" || platform == "Quest")
             return;
 
-        if (Plugin.createdDates.TryGetValue(GetComponent<VRRig>().OwningNetPlayer.UserId, out DateTime createdDate))
+        if (Plugin.CreatedDates.TryGetValue(GetComponent<VRRig>().OwningNetPlayer.UserId, out DateTime createdDate))
         {
             if (createdDate > new DateTime(2023, 02, 06))
             {
@@ -126,11 +126,11 @@ public class StatsTag : TagBase
             return;
         }
 
-        Plugin.createdDates[GetComponent<VRRig>().OwningNetPlayer.UserId] = new DateTime(2023, 02, 05);
+        Plugin.CreatedDates[GetComponent<VRRig>().OwningNetPlayer.UserId] = new DateTime(2023, 02, 05);
 
         GetAccountInfoResult actualCreatedDate =
             await GetAccountCreationDateAsync(GetComponent<VRRig>().OwningNetPlayer.UserId);
-        Plugin.createdDates[GetComponent<VRRig>().OwningNetPlayer.UserId] = actualCreatedDate.AccountInfo.Created;
+        Plugin.CreatedDates[GetComponent<VRRig>().OwningNetPlayer.UserId] = actualCreatedDate.AccountInfo.Created;
 
         if (TryGetComponent<AccountCreationDateTag>(out AccountCreationDateTag accountCreationDateTag))
         {

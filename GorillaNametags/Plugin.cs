@@ -22,15 +22,18 @@ public class Plugin : BaseUnityPlugin
     public static Transform FirstPersonCamera;
     public static Transform ThirdPersonCamera;
 
+    public static event Action<TMP_FontAsset> OnFontReloaded;
+
     public const string FirstPersonLayerName = "FirstPersonOnly";
     public const string ThirdPersonLayerName = "MirrorOnly";
 
-    public static Dictionary<VRRig, UserIDTag> userIDTags = new();
-    public static Dictionary<string, DateTime> createdDates = new();
+    public static Dictionary<string, DateTime> CreatedDates = new();
     
     private const string GorillaInfoURL = "https://raw.githubusercontent.com/HanSolo1000Falcon/GorillaInfo/main/";
     
     private static TMP_FontAsset chosenFont;
+
+    private bool isGuiOpen = true;
 
     private void Start()
     {
@@ -41,11 +44,8 @@ public class Plugin : BaseUnityPlugin
             { { "GorillaNametags", "Made by HanSolo1000Falcon B)" } });
     }
 
-    private void OnGameInitialized()
+    private void LoadCurrentFont()
     {
-        FirstPersonCamera = GorillaTagger.Instance.mainCamera.transform;
-        ThirdPersonCamera = GorillaTagger.Instance.thirdPersonCamera.transform.GetChild(0);
-        
         string directoryPath = Path.Combine(Paths.BepInExRootPath, "GorillaNametagsFont");
 
         if (!Directory.Exists(directoryPath))
@@ -71,8 +71,36 @@ public class Plugin : BaseUnityPlugin
             Debug.LogError($"Error loading font: {ex.Message}");
             Application.Quit();
         }
+    }
+
+    private void OnGUI()
+    {
+        if (!isGuiOpen)
+            return;
+        
+        GUI.Label(new Rect(20f, Screen.height - 40f, 400f, 20f), "Press 'L' to hot-reload font; press 'O' to open/close GUI");
+    }
+
+    private void Update()
+    {
+        if (UnityInput.Current.GetKeyDown(KeyCode.O))
+            isGuiOpen = !isGuiOpen;
+
+        if (UnityInput.Current.GetKeyDown(KeyCode.L))
+        {
+            LoadCurrentFont();
+            OnFontReloaded?.Invoke(chosenFont);
+        }
+    }
+
+    private void OnGameInitialized()
+    {
+        FirstPersonCamera = GorillaTagger.Instance.mainCamera.transform;
+        ThirdPersonCamera = GorillaTagger.Instance.thirdPersonCamera.transform.GetChild(0);
 
         gameObject.AddComponent<PunCallbacks>();
+        
+        LoadCurrentFont();
 
         using (HttpClient httpClient = new())
         {

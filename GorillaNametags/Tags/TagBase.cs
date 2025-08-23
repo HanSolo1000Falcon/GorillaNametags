@@ -18,6 +18,17 @@ public class TagBase : MonoBehaviour
     {
         firstPersonTag = Plugin.CreateTag($"FirstPerson{GetType().Name}", Plugin.FirstPersonLayerName, firstPersonParent, localPosition);
         thirdPersonTag = Plugin.CreateTag($"ThirdPerson{GetType().Name}", Plugin.ThirdPersonLayerName, thirdPersonParent, localPosition);
+
+        Plugin.OnFontReloaded += UpdateFont;
+    }
+
+    private void UpdateFont(TMP_FontAsset fontAsset)
+    {
+        if (firstPersonTag != null)
+            firstPersonTag.font = fontAsset;
+
+        if (thirdPersonTag != null)
+            thirdPersonTag.font = fontAsset;
     }
     
     public void AssignTagParents(Transform firstPersonParentNew, Transform thirdPersonParentNew) => (firstPersonParent, thirdPersonParent) = (firstPersonParentNew, thirdPersonParentNew);
