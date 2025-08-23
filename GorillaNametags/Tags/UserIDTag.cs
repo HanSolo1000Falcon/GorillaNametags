@@ -36,6 +36,7 @@ public class UserIDTag : TagBase
         
         Destroy(statsTag);
         Destroy(fpsNametag);
+        Destroy(accountCreationDateTag);
     }
 
     private void Update()
