@@ -18,9 +18,9 @@ public class UserIDTag : TagBase
         
         rig = GetComponent<VRRig>();
 
-        statsTag = gameObject.AddComponent<StatsTag>();
-        fpsNametag = gameObject.AddComponent<FPSNametag>();
-        accountCreationDateTag = gameObject.AddComponent<AccountCreationDateTag>();
+        statsTag = rig.AddComponent<StatsTag>();
+        fpsNametag = rig.AddComponent<FPSNametag>();
+        accountCreationDateTag = rig.AddComponent<AccountCreationDateTag>();
         
         statsTag.AssignTagParents(firstPersonTag.transform, thirdPersonTag.transform);
         fpsNametag.AssignTagParents(firstPersonTag.transform, thirdPersonTag.transform);

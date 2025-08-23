@@ -43,8 +43,8 @@ public class StatsTag : TagBase
         
         rig = GetComponent<VRRig>();
         
-        UpdatePlatform();
         UpdateProperties();
+        UpdatePlatform();
     }
     
     private void Update()
