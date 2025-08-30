@@ -81,10 +81,10 @@ public class StatsTag : TagBase
 
         foreach (string key in customProperties.Keys)
         {
-            if (KnownMods.TryGetValue(key, out string modName))
+            if (KnownMods.TryGetValue(key.ToLower(), out string modName))
                 properties += $"<color={colors[random.Next(0, colors.Length)]}>[{modName}]</color>";
             
-            if (KnownCheats.TryGetValue(key, out string cheatName))
+            if (KnownCheats.TryGetValue(key.ToLower(), out string cheatName))
                 properties += $"<color={colors[random.Next(0, colors.Length)]}>[{cheatName}]</color>";
         }
     }
