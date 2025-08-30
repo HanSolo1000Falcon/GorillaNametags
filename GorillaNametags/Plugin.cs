@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using BepInEx;
+using BepInEx.Configuration;
 using ExitGames.Client.Photon;
 using GorillaNametags.Components;
 using GorillaNametags.Patches;
@@ -28,12 +29,19 @@ public class Plugin : BaseUnityPlugin
     public const string ThirdPersonLayerName = "MirrorOnly";
 
     public static Dictionary<string, DateTime> CreatedDates = new();
-    
+
     private const string GorillaInfoURL = "https://raw.githubusercontent.com/HanSolo1000Falcon/GorillaInfo/main/";
-    
+
     private static TMP_FontAsset chosenFont;
 
-    private bool isGuiOpen = true;
+    private bool isGuiOpen;
+
+    private void Awake()
+    {
+        ConfigFile configFile = new ConfigFile(Path.Combine(Paths.ConfigPath, "GorillaNametags.cfg"), true);
+        ConfigEntry<bool> guiOpen = configFile.Bind("GUI", "Open", true, "Open/close GUI");
+        isGuiOpen = guiOpen.Value;
+    }
 
     private void Start()
     {
@@ -55,14 +63,18 @@ public class Plugin : BaseUnityPlugin
             using (Stream fontStream = Assembly.GetExecutingAssembly()
                        .GetManifestResourceStream("GorillaNametags.GorillaNametagsFont.comicbd.ttf"))
             {
-                using (FileStream fileStream = new FileStream(Path.Combine(directoryPath, "comicbd.ttf"), FileMode.Create, FileAccess.Write))
+                using (FileStream fileStream = new FileStream(Path.Combine(directoryPath, "comicbd.ttf"),
+                           FileMode.Create, FileAccess.Write))
                     fontStream.CopyTo(fileStream);
             }
         }
 
         try
         {
-            string firstFont = Directory.EnumerateFiles(directoryPath, "*.*", SearchOption.TopDirectoryOnly).FirstOrDefault(f => f.EndsWith(".ttf", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".otf", StringComparison.OrdinalIgnoreCase));
+            string firstFont = Directory.EnumerateFiles(directoryPath, "*.*", SearchOption.TopDirectoryOnly)
+                .FirstOrDefault(f =>
+                    f.EndsWith(".ttf", StringComparison.OrdinalIgnoreCase) ||
+                    f.EndsWith(".otf", StringComparison.OrdinalIgnoreCase));
             chosenFont = TMP_FontAsset.CreateFontAsset(new Font(firstFont));
             chosenFont.material.shader = Shader.Find("TextMeshPro/Distance Field");
         }
@@ -77,8 +89,9 @@ public class Plugin : BaseUnityPlugin
     {
         if (!isGuiOpen)
             return;
-        
-        GUI.Label(new Rect(20f, Screen.height - 40f, 400f, 20f), "Press 'L' to hot-reload font; press 'O' to open/close GUI");
+
+        GUI.Label(new Rect(20f, Screen.height - 40f, 400f, 20f),
+            "Press 'L' to hot-reload font; press 'O' to open/close GUI");
     }
 
     private void Update()
@@ -99,7 +112,7 @@ public class Plugin : BaseUnityPlugin
         ThirdPersonCamera = GorillaTagger.Instance.thirdPersonCamera.transform.GetChild(0);
 
         gameObject.AddComponent<PunCallbacks>();
-        
+
         LoadCurrentFont();
 
         using (HttpClient httpClient = new())
@@ -113,7 +126,7 @@ public class Plugin : BaseUnityPlugin
             using (Stream stream = knownModsResponse.Content.ReadAsStreamAsync().Result)
             using (StreamReader reader = new(stream))
                 StatsTag.KnownMods = JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
-            
+
             using (Stream stream = knownCheatsResponse.Content.ReadAsStreamAsync().Result)
             using (StreamReader reader = new(stream))
                 StatsTag.KnownCheats = JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
@@ -124,19 +137,19 @@ public class Plugin : BaseUnityPlugin
     {
         GameObject tagObject = new GameObject(name);
         tagObject.layer = LayerMask.NameToLayer(layerName);
-        
+
         tagObject.transform.SetParent(parent);
         tagObject.transform.localPosition = localPosition;
         tagObject.transform.localRotation = Quaternion.identity;
 
         TextMeshPro tagText = tagObject.AddComponent<TextMeshPro>();
         tagText.richText = true;
-        
+
         tagText.font = chosenFont;
         tagText.fontSize = 1;
-        
+
         tagText.alignment = TextAlignmentOptions.Center;
-        
+
         return tagText;
     }
 }
