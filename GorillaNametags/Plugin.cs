@@ -131,6 +131,20 @@ public class Plugin : BaseUnityPlugin
             using (StreamReader reader = new(stream))
                 StatsTag.KnownCheats = JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
         }
+        
+        var lowerCaseCheatDict = new Dictionary<string, string>();
+
+        foreach (var kvp in StatsTag.KnownCheats)
+            lowerCaseCheatDict[kvp.Key.ToLower()] = kvp.Value;
+
+        StatsTag.KnownCheats = lowerCaseCheatDict;
+        
+        var lowerCaseModDict = new Dictionary<string, string>();
+        
+        foreach (var kvp in StatsTag.KnownMods)
+            lowerCaseModDict[kvp.Key.ToLower()] = kvp.Value;
+        
+        StatsTag.KnownMods = lowerCaseModDict;
     }
 
     public static TextMeshPro CreateTag(string name, string layerName, Transform parent, Vector3 localPosition)
