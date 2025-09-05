@@ -75,8 +75,8 @@ public class Plugin : BaseUnityPlugin
                 .FirstOrDefault(f =>
                     f.EndsWith(".ttf", StringComparison.OrdinalIgnoreCase) ||
                     f.EndsWith(".otf", StringComparison.OrdinalIgnoreCase));
-            chosenFont = TMP_FontAsset.CreateFontAsset(new Font(firstFont));
-            chosenFont.material.shader = Shader.Find("TextMeshPro/Distance Field");
+            chosenFont = TMP_FontAsset.CreateFontAsset(Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font);
+            /*chosenFont.material.shader = Shader.Find("TextMeshPro/Distance Field");*/
         }
         catch (Exception ex)
         {
