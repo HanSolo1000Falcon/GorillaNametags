@@ -12,6 +12,6 @@ public class SetColorPatch
         if (__instance.isLocal)
             return;
         
-        __instance.GetOrAddComponent<UserIDTag>(out UserIDTag userIDTag);
+        __instance.GetOrAddComponent(out UserIDTag _);
     }
 }

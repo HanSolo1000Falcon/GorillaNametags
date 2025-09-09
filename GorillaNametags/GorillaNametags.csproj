@@ -299,6 +299,9 @@
 
     <ItemGroup>
         <None Remove="GorillaNametagsFont\comicbd.ttf"/>
-        <EmbeddedResource Include="GorillaNametagsFont\comicbd.ttf"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="GorillaNametagsFont\comicbd.ttf" />
     </ItemGroup>
 </Project>

@@ -11,7 +11,7 @@ public class PunCallbacks : MonoBehaviourPunCallbacks
     {
         foreach (VRRig rig in GorillaParent.instance.vrrigs)
         {
-            if (rig.OwningNetPlayer.UserId != targetPlayer.UserId || rig.isLocal)
+            if (rig.OwningNetPlayer == null || rig.OwningNetPlayer.UserId != targetPlayer.UserId || rig.isLocal)
                 continue;
             
             rig.GetComponent<StatsTag>().UpdateProperties();

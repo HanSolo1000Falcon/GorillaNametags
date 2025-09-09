@@ -28,7 +28,7 @@ public class Plugin : BaseUnityPlugin
     public const string FirstPersonLayerName = "FirstPersonOnly";
     public const string ThirdPersonLayerName = "MirrorOnly";
 
-    public static Dictionary<string, DateTime> CreatedDates = new();
+    public static readonly Dictionary<string, DateTime> CreatedDates = new();
 
     private const string GorillaInfoURL = "https://raw.githubusercontent.com/HanSolo1000Falcon/GorillaInfo/main/";
 
@@ -60,23 +60,19 @@ public class Plugin : BaseUnityPlugin
         {
             Directory.CreateDirectory(directoryPath);
 
-            using (Stream fontStream = Assembly.GetExecutingAssembly()
-                       .GetManifestResourceStream("GorillaNametags.GorillaNametagsFont.comicbd.ttf"))
-            {
-                using (FileStream fileStream = new FileStream(Path.Combine(directoryPath, "comicbd.ttf"),
-                           FileMode.Create, FileAccess.Write))
-                    fontStream.CopyTo(fileStream);
-            }
+            using Stream fontStream = Assembly.GetExecutingAssembly()
+                .GetManifestResourceStream("GorillaNametags.GorillaNametagsFont.comicbd.ttf");
+            using FileStream fileStream = new FileStream(Path.Combine(directoryPath, "comicbd.ttf"),
+                FileMode.Create, FileAccess.Write);
+            fontStream.CopyTo(fileStream);
         }
 
         try
         {
-            string firstFont = Directory.EnumerateFiles(directoryPath, "*.*", SearchOption.TopDirectoryOnly)
-                .FirstOrDefault(f =>
-                    f.EndsWith(".ttf", StringComparison.OrdinalIgnoreCase) ||
-                    f.EndsWith(".otf", StringComparison.OrdinalIgnoreCase));
-            chosenFont = TMP_FontAsset.CreateFontAsset(Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font);
-            /*chosenFont.material.shader = Shader.Find("TextMeshPro/Distance Field");*/
+            string chosenFontPath = Directory.EnumerateFiles(directoryPath, "*.*").FirstOrDefault(path =>
+                path.ToLower().EndsWith(".ttf") || path.ToLower().EndsWith(".otf"));
+            chosenFont = TMP_FontAsset.CreateFontAsset(new Font(chosenFontPath));
+            chosenFont.material.shader = Shader.Find("TextMeshPro/Mobile/Distance Field");
         }
         catch (Exception ex)
         {
@@ -131,26 +127,28 @@ public class Plugin : BaseUnityPlugin
             using (StreamReader reader = new(stream))
                 StatsTag.KnownCheats = JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
         }
-        
+
         var lowerCaseCheatDict = new Dictionary<string, string>();
 
         foreach (var kvp in StatsTag.KnownCheats)
             lowerCaseCheatDict[kvp.Key.ToLower()] = kvp.Value;
 
         StatsTag.KnownCheats = lowerCaseCheatDict;
-        
+
         var lowerCaseModDict = new Dictionary<string, string>();
-        
+
         foreach (var kvp in StatsTag.KnownMods)
             lowerCaseModDict[kvp.Key.ToLower()] = kvp.Value;
-        
+
         StatsTag.KnownMods = lowerCaseModDict;
     }
 
     public static TextMeshPro CreateTag(string name, string layerName, Transform parent, Vector3 localPosition)
     {
-        GameObject tagObject = new GameObject(name);
-        tagObject.layer = LayerMask.NameToLayer(layerName);
+        GameObject tagObject = new GameObject(name)
+        {
+            layer = LayerMask.NameToLayer(layerName)
+        };
 
         tagObject.transform.SetParent(parent);
         tagObject.transform.localPosition = localPosition;
